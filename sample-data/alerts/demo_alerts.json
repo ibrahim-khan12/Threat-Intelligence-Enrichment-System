@@ -1,0 +1,63 @@
+[
+  {
+    "alert_id": "ALRT-1001",
+    "source": "Suricata",
+    "timestamp": "2026-05-08T10:00:00Z",
+    "src_ip": "185.220.101.4",
+    "domain": "malicious-login.com",
+    "file_hash": "44d88612fea8a8f36de82e1278abb02f",
+    "payload": {"signature": "ET MALWARE C2 Beacon"}
+  },
+  {
+    "alert_id": "ALRT-1002",
+    "source": "Zeek",
+    "timestamp": "2026-05-08T10:05:00Z",
+    "src_ip": "8.8.8.8",
+    "domain": "example.org",
+    "payload": {"note": "benign test traffic"}
+  },
+  {
+    "alert_id": "ALRT-1003",
+    "source": "EDR",
+    "timestamp": "2026-05-08T10:15:00Z",
+    "src_ip": "10.10.10.25",
+    "domain": "malicious-login.com",
+    "payload": {"behavior": "suspicious child process chain"}
+  },
+  {
+    "alert_id": "ALRT-1004",
+    "source": "Microsoft365",
+    "timestamp": "2026-05-08T10:20:00Z",
+    "src_ip": "91.240.118.172",
+    "domain": "invoice-reset365.com",
+    "url": "https://cdn-sharepoint-auth.com/session/update",
+    "payload": {
+      "subject": "Updated invoice requires sign-in",
+      "mailbox": "finance@example.local",
+      "note": "Suspicious O365 phishing redirection"
+    }
+  },
+  {
+    "alert_id": "ALRT-1005",
+    "source": "EDR",
+    "timestamp": "2026-05-08T10:25:00Z",
+    "src_ip": "172.16.20.44",
+    "file_hash": "8f434346648f6b96df89dda901c5176b10a6d83961fca1d8a7f3c8fcbf9f7f5d",
+    "payload": {
+      "process_tree": "setup.exe -> updater.exe -> powershell.exe",
+      "behavior": "credential access and browser data scraping"
+    }
+  },
+  {
+    "alert_id": "ALRT-1006",
+    "source": "Firewall",
+    "timestamp": "2026-05-08T10:32:00Z",
+    "src_ip": "91.240.118.172",
+    "dest_ip": "10.20.4.8",
+    "payload": {
+      "action": "allow",
+      "port": 443,
+      "note": "Outbound session to known ransomware loader infrastructure"
+    }
+  }
+]
