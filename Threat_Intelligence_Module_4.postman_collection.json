@@ -1,0 +1,343 @@
+{
+  "info": {
+    "name": "Threat Intelligence Module 4 - MISP & OpenCTI Integration",
+    "description": "API collection for testing MISP and OpenCTI integration with Module 4",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.environment.set('jwt_token', jsonData.access_token);",
+                  "  console.log('JWT Token set: ' + jsonData.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "MISP Integration",
+      "item": [
+        {
+          "name": "Test MISP Connection (Search)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{misp_api_key}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": \"185.220.101.4\"\n}"
+            },
+            "url": {
+              "raw": "{{misp_url}}/attributes/restSearch",
+              "host": ["{{misp_url}}"],
+              "path": ["attributes", "restSearch"]
+            }
+          }
+        },
+        {
+          "name": "Test MISP Connection (Get Events)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{misp_api_key}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{misp_url}}/events/index",
+              "host": ["{{misp_url}}"],
+              "path": ["events", "index"]
+            }
+          }
+        },
+        {
+          "name": "Sync IOCs from MISP",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/iocs/sync/misp",
+              "host": ["{{base_url}}"],
+              "path": ["api", "iocs", "sync", "misp"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "OpenCTI Integration",
+      "item": [
+        {
+          "name": "Test OpenCTI Connection (GraphQL)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{opencti_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query IndicatorSearch($search: String!) { indicators(search: $search, first: 1) { edges { node { name ... on StixCyberObservable { objectLabel { value } } } } } }\",\n  \"variables\": {\n    \"search\": \"185.220.101.4\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{opencti_url}}/graphql",
+              "host": ["{{opencti_url}}"],
+              "path": ["graphql"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Alert Enrichment",
+      "item": [
+        {
+          "name": "Ingest Alert",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alert_id\": \"ALRT-TEST-001\",\n  \"source\": \"Suricata\",\n  \"timestamp\": \"2026-05-10T10:00:00Z\",\n  \"src_ip\": \"185.220.101.4\",\n  \"dest_ip\": \"10.0.5.24\",\n  \"domain\": \"malicious-login.com\",\n  \"url\": \"https://malicious-login.com/phish\",\n  \"file_hash\": \"44d88612fea8a8f36de82e1278abb02f\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/alerts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "alerts"]
+            }
+          }
+        },
+        {
+          "name": "Enrich Alert Now",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alert_id\": \"ALRT-TEST-002\",\n  \"source\": \"EDR\",\n  \"timestamp\": \"2026-05-10T10:05:00Z\",\n  \"src_ip\": \"8.8.8.8\",\n  \"file_hash\": \"44d88612fea8a8f36de82e1278abb02f\",\n  \"domain\": \"example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/enrich",
+              "host": ["{{base_url}}"],
+              "path": ["api", "enrich"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "IOC Management",
+      "item": [
+        {
+          "name": "List IOCs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/iocs",
+              "host": ["{{base_url}}"],
+              "path": ["api", "iocs"]
+            }
+          }
+        },
+        {
+          "name": "Create IOC",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ioc_type\": \"ip\",\n  \"value\": \"192.168.1.100\",\n  \"threat_level\": \"high\",\n  \"source\": \"manual\",\n  \"tags\": [\"malicious\", \"test\"],\n  \"description\": \"Test IOC\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/iocs",
+              "host": ["{{base_url}}"],
+              "path": ["api", "iocs"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Enriched Alerts & Results",
+      "item": [
+        {
+          "name": "Get Enriched Alerts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/enriched-alerts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "enriched-alerts"]
+            }
+          }
+        },
+        {
+          "name": "Get IOC Relationships",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/enrich/ioc-relationships",
+              "host": ["{{base_url}}"],
+              "path": ["api", "enrich", "ioc-relationships"]
+            }
+          }
+        },
+        {
+          "name": "Get Threat Graph",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/enrich/threat-graph",
+              "host": ["{{base_url}}"],
+              "path": ["api", "enrich", "threat-graph"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/dashboard/summary",
+              "host": ["{{base_url}}"],
+              "path": ["api", "dashboard", "summary"]
+            }
+          }
+        },
+        {
+          "name": "Get Recent Enriched",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/dashboard/recent-enriched",
+              "host": ["{{base_url}}"],
+              "path": ["api", "dashboard", "recent-enriched"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "misp_url",
+      "value": "http://localhost:8081",
+      "type": "string"
+    },
+    {
+      "key": "misp_api_key",
+      "value": "your-misp-api-key",
+      "type": "string"
+    },
+    {
+      "key": "opencti_url",
+      "value": "http://localhost:8082",
+      "type": "string"
+    },
+    {
+      "key": "opencti_token",
+      "value": "your-opencti-api-token",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
