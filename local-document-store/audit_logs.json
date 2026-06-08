@@ -1,0 +1,8 @@
+[
+  {
+    "event": "alert_enriched",
+    "alert_id": "SANITY-FILIGRAN-001",
+    "severity": "Low",
+    "created_at": "2026-05-10T16:54:46.674570+00:00"
+  }
+]

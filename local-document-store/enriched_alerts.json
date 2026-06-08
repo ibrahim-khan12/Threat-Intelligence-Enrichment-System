@@ -1,0 +1,60 @@
+[
+  {
+    "alert_id": "SANITY-FILIGRAN-001",
+    "source": "Suricata",
+    "created_at": "2026-05-10T16:54:46.674570+00:00",
+    "raw_alert": {
+      "alert_id": "SANITY-FILIGRAN-001",
+      "source": "Suricata",
+      "timestamp": "2026-05-10T16:10:00Z",
+      "src_ip": "10.10.10.25",
+      "domain": "mehrstimmen.de",
+      "payload": {
+        "signature": "sanity"
+      }
+    },
+    "risk_score": 5,
+    "severity": "Low",
+    "ioc_matches": [
+      {
+        "indicator": "mehrstimmen.de",
+        "ioc_type": "domain",
+        "source": "demo",
+        "threat_level": "medium",
+        "tags": [
+          "ai-generated content",
+          "deepfakes",
+          "disinformation",
+          "german elections",
+          "influence operations",
+          "media impersonation",
+          "social media manipulation"
+        ],
+        "threat_actor": null,
+        "malware_family": null,
+        "campaign": null,
+        "mitre_attack": [],
+        "cves": [],
+        "reputation": "Unknown",
+        "country": "Unknown",
+        "whois": {},
+        "dns": {},
+        "geo": {}
+      }
+    ],
+    "mitre_attack": [],
+    "recommended_action": "Log event and continue monitoring",
+    "sigma_matches": [],
+    "yara_matches": [],
+    "ai_classification": {
+      "label": "benign-or-unknown",
+      "supporting_labels": [],
+      "confidence": 0.45
+    },
+    "anomaly_score": 42,
+    "threat_hunt_terms": [
+      "Unknown",
+      "mehrstimmen.de"
+    ]
+  }
+]
